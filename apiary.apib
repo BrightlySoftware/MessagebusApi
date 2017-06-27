@@ -1,0 +1,159 @@
+FORMAT: 1A
+HOST: https://v1.messagebus.dudesolutions.io
+
+USECOMMONSDKLIBRARY: TRUE
+GENERATEASYNCCODE: TRUE
+GENERATEINTERFACES: TRUE
+USEMETHODPREFIX: TRUE
+USEMODELPOSTFIX: FALSE
+USECONTROLLERPOSTFIX: FALSE
+USEENUMPOSTFIX: FALSE
+USECONSTRUCTORSFORCONFIG: TRUE
+CSHARPDEFAULTNAMESPACE: DSI.SDK.messagebus
+JAVADEFAULTNAMESPACE: io.dudesolutions.messagebus
+BRANDLABEL: Dude Solutions, Inc.
+USERAGENT: Dude SDK
+NULLIFY404: TRUE
+VALIDATEREQUIREDPARAMETERS: FALSE
+COLLECTPARAMETERS: TRUE
+ARRAYSERIALIZATION: Plain
+
+# Dude MessageBus Api
+
+## Reference
+Good reference document: https://raw.githubusercontent.com/apiaryio/api-blueprint/master/examples/Polls%20API.md
+
+## Authentication
+*MessageBus Api* uses OAuth v2 Authentication. First you create a new (or acquire existing) OAuth v2 token using [DudeAuth](https://www.dudeauth.com/).
+
+New to *OAuth*?  Check out the [OAuth Bible](http://oauthbible.com/) for good reference material.
+
+MessageBus API also allows a bearer token to be passed in the query string. (i.e. /somepath?accessToken=*token*)
+
+## Media Types
+Where applicable this API uses the *JSON* media-type to represent resources.
+
+Requests and responses with a message-body use plain JSON to set or update resources.
+
+## Error States
+Common [HTTP Response Status Codes](https://github.com/for-GET/know-your-http-well/blob/master/status-codes.md) are used throughout this API.
+
+In addition to standard response codes the response object returned from the server during an exception event may contain additional information in the following JSON format:
+
+        {
+            "message": "SOME MESSAGE",
+            "dudeReferenceId": "3523845A-4729-4CCB-9E16-01DEADF6C2DF",
+            "stackTrace": "Null, Typically"
+        }
+
+## Data Restriction
+Depending on the access level granted to the calling client certain data elements throughout this API will be removed and not returned.
+
+## Dates & Times
+All dates and times are represented in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) format.  In addition, *<ApiName>* will always provide [Coordinated Universal Time](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).
+
+The API is capable of parsing most date and time formats, however we do require UTC dates and times be provided from all calling systems.  We highly recommend you utilize the ISO-8601 standard when communicating dates and time to the API as well.
+
+## Known Issues
+None at this time
+
+# Group System Information
+Check API System Information.
+
+## S.I. Check [/]
+Retrieve api version, vitals, links, etc.
+
+### GET
+
++ Response 200 (application/json)
+    + Attributes (System Information)
+
+# Group Heartbeat
+Check health of dependent services.
+
+## Heartbeat Check [/heartbeat]
+The heartbeat is exposed and provided to check for availability of the service.
+Any response that does not provide a ```200 OK``` response code should be treated as an error.
+
+### GET
+
++ Response 200 (application/json)
+    + Headers
+
+            X-Dude-Api-Limit: Unlimited or Number
+            X-Dude-Api-Remaining: Unlimited or Number
+            X-Dude-Api-Server: Api Server ID
+
+    + Attributes (Heartbeat)
+
+# Group Messages
+Add messages to the message bus
+
+## Change Message [/accounts/{accountId}/changemessages]
+This endpoint allows for the post of change messages.
+
++ Parameters
+    + accountId: 2 (required, number) - {INT} ID of the account in the form of an integer
+
+### POST
+
++ Request
+    + Attributes (Change Message Object)
+
++ Response 201 (application/json; charset=utf-8)
+    + Attributes (Change Message Object)
+
+# Data Structures
+
+## System Information (object)
+Represents the MessageBus Api application name, version, etc. Returned in the heartbeat
+
+###Properties
++ `application`: `Dude MessageBus Api` (string, required) - The name of the application.
++ `version` : `1.0.0.0` (string, required) - The assembly version.
++ `apiVersion` : `1.0.0.0` (string, required) - The API version.
++ `vitals` (Heartbeat, required) - The state of the system dependencies.
++ `links` (array[System Links], required) - The API routes.
+
+
+## System Links (object)
+Array of links returned in the System Information
+
+###Properties
++ `endpoint` : `MessageBus` (string, required) - The name of the endpoint.
++ `action` : `Get` (string, required) - The REST action.
++ `route` : `/accounts/{accountId}/changes` (string, required) - The route to the endpoint.
+
+
+## Heartbeat (object)
+Represents the data returned by the heartbeat request
+
+###Properties
++ `cachevitalcheck`: true (boolean, required) - Vital check to ensure cache is available and online
+
+## Base Collection Response (object)
+Represents the standard page, pagesize, etc. of the request when working against the collection
+
+###Properties
++ `page`: 1 (number, required) - {INT} The current page provided in the response data.
++ `pageSize`: 1000 (number, required) - {INT} The page size returned in the response data.
++ `dataSize` (number, required) - {INT} The total records returned in the response.
++ `total` (number, required) - {INT} The total number of records available in the collection.
+
+
+## Base User Object (object)
++ `id`: 1 (number, required) - {INT} The ID of the user.
++ `firstName`: John (string, required) - The first name of the user.
++ `lastName`: Smith (string, required) - The last name of the user.
++ `email`: john.smith@dudesolutions.io (string, required) - The email address of the user.
+
+## Base Client Object (object)
++ `id`: 1 (number, required) - {INT} The ID of the API client.
+
+## Change Message Object (object)
+Represents the message data for a change message with all fields which will be pushed onto the message bus
+
+###Properties
++ `type`: `Workorder` (string, required) - The type of the change - i.e. Workorder, Asset, Inventory Item
++ `beforeUpdate` (object, required) - Dynamic Object before the changes
++ `afterUpdate` (object, required) - Dynamic Object after the changes
