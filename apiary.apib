@@ -49,11 +49,6 @@ In addition to standard response codes the response object returned from the ser
 ## Data Restriction
 Depending on the access level granted to the calling client certain data elements throughout this API will be removed and not returned.
 
-## Dates & Times
-All dates and times are represented in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) format.  In addition, *MessageBus Api* will always provide [Coordinated Universal Time](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).
-
-The API is capable of parsing most date and time formats, however we do require UTC dates and times be provided from all calling systems.  We highly recommend you utilize the ISO-8601 standard when communicating dates and time to the API as well.
-
 ## Known Issues
 None at this time
 
@@ -89,16 +84,16 @@ Any response that does not provide a ```200 OK``` response code should be treate
 # Group Messages
 Add messages to the message bus
 
-## Change Message [/changemessages]
+## Change Message [/messages]
 This endpoint allows for the post of change messages.
 
 ### POST
 
 + Request
-    + Attributes (Change Message Request Object)
+    + Attributes (Message Request Object)
 
 + Response 202 (application/json; charset=utf-8)
-    + Attributes (Change Message Response Object)
+    + Attributes (Message Response Object)
 
 # Data Structures
 
@@ -127,50 +122,16 @@ Represents the data returned by the heartbeat request
 ###Properties
 + `cachevitalcheck`: true (boolean, required) - Vital check to ensure cache is available and online
 
-## Change Message Request Object (object)
+## Message Request Object (object)
+Represents the message data for a message request to be pushed onto the message bus
+
+###Properties
++ `topic`: `change-event` (string, required) - The topic of the message
++ `body` (object, required) - The message being pushed onto Kafka
+
+## Message Response Object (object)
 Represents the message data for a change message request to be pushed onto the message bus
 
 ###Properties
-+ `self` (Self Object, required) - The object defining the object type and object ID of the object being changed
-+ `user` (Base User Object, required) - The object representing the user who made the change
-+ `accountId`: 2 (number, required) - {INT} The account ID for the user who made the change
-+ `changeDateTime`: `2015-01-01T00:00:00.123Z` (string, required) - {DATETIME} The date and time in ISO-8601 format of the changed date and time
-+ `parent` (Parent Object, optional) - The object defining the parent object type and object id
-+ `before` (object, required) - Dynamic Object before the change
-+ `after` (object, required) - Dynamic Object after the change
-+ `extraData` (object, required) - Dictionary of extra data on the request
-
-## Change Message Response Object (object)
-Represents the message data for a change message request to be pushed onto the message bus
-
-###Properties
-+ `self` (Self Object, required) - The object defining the object type and object ID of the object being changed
-+ `user` (Base User Object, required) - The object representing the user who made the change
-+ `changeDateTime`: `2015-01-01T00:00:00.123Z` (string, required) - {DATETIME} The date and time in ISO-8601 format of the changed date and time
-+ `parent` (Parent Object, optional) - The object defining the parent object type and object id
-+ `before` (object, required) - Dynamic Object before the change
-+ `after` (object, required) - Dynamic Object after the change
-+ `extraData` (object, required) - Dictionary of extra data on the request
-
-## Self Object (object)
-Represent the object being changed, containing the object ID and object type
-
-###Properties
-+ `objectId`: 1 (number, required) - {INT} The ID of the object being changed
-+ `objectType`: `weblink` (string, required) - The type of the object being changed - i.e. workorder, asset, inventory item
-
-## Parent Object (object)
-Represents the parent object, id and type
-
-###Properties
-+ `objectId`: 1 (number, required) - {INT}  The ID of the parent object
-+ `objectType`: `workorder` (string, required) - The type of parent object - i.e. workorder, asset, inventory item
-
-## Base User Object (object)
-Represents a user with base properties.
-
-### Properties
-+ `id`: 1 (number, required) - {INT} The ID of the user.
-+ `firstName`: John (string, required) - The first name of the user.
-+ `lastName`: Smith (string, required) - The last name of the user.
-+ `email`: john.smith@dudesolutions.io (string, required) - The email address of the user.
++ `partition`: 1 (number, required) - The partition of the message being inserted onto Kafka
++ `offset`: 10 (number, required) - The partition of the message being insert onto Kafka
